@@ -9,7 +9,7 @@ const routes = createBrowserRouter([
     element: <Login />,  // Ruta para la pantalla de Login
   },
   {
-    path: "/dashboard",
+    path: "/Dashboard",
     element: <Dashboard />,  // Ruta para la pantalla principal
   }
 ]);

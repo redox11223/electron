@@ -1,6 +1,6 @@
 import  { useState } from 'react';
 import { useNavigate } from 'react-router-dom';  // Importamos el hook useNavigate de React Router DOM
-import 'bootstrap/dist/css/bootstrap.min.css';
+//import 'bootstrap/dist/css/bootstrap.min.css';
 //import './assets/base.css';
 
 const Login = () => {
@@ -13,7 +13,8 @@ const Login = () => {
     // Lógica de validación de login
     console.log(`Email: ${email}, Password: ${password}`);
     // Redirige a la pantalla principal (dashboard) después de hacer login
-    navigate('/dashboard');
+    //navigate('/dashboard');
+    navigate('/dashboard', { state: { email } });
   };
 
   

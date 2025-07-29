@@ -1,12 +1,30 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './assets/base.css';
+/*
+import Layout from './components/Layout';
 
 const Dashboard = () => {
   return (
-    <div className="dashboard-container">
-      <h1>Welcome to the Dashboard</h1>
-      <p>This is the main content area!</p>
-    </div>
+    <>
+      <Layout />  
+    </>  
+
+  );
+};
+
+export default Dashboard;
+*/
+
+import { useLocation } from 'react-router-dom';
+import Layout from './components/Layout';
+
+const Dashboard = () => {
+  const location = useLocation();
+  const email = location.state?.email;  // Recuperamos el email pasado desde Login
+  console.log(email);
+  return (
+    <>
+      <Layout userEmail={email} />  {/* Pasamos el email a Layout */}
+      
+    </>
   );
 };
 

@@ -28,7 +28,8 @@
   --color-background-soft: var(--ev-c-black-soft);
   --color-background-mute: var(--ev-c-black-mute);
 
-  --color-text: var(--ev-c-text-1);
+  /*--color-text: var(--ev-c-text-1); */
+  --color-text: #ffffff;
 }
 
 *,
@@ -64,4 +65,58 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1000;
+}
+
+
+/* Sidebar.css */
+.sidebar-menu {
+  padding-left: 0 !important;
+  left: 0;
+  position: fixed;
+  background-color: skyblue;
+  
+}
+
+.sidebar-menu li {
+  margin-bottom: 30px;
+  font-size: 16px;
+
+}
+
+
+
+.sidebar-link{
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Efecto hover */
+.sidebar-link:hover {
+  background-color: #4CAF50; /* Verde cuando el mouse pasa encima */
+  color: white; /* Cambiar el color del texto a blanco */
+}
+
+.sidebar-menu li {
+  list-style-type: none;
+}
+
+/* Agregar margen entre las secciones */
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+.etiqueta1 {
+  margin-top: 220px;
 }
