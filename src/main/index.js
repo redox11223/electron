@@ -1,11 +1,9 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import Database from 'better-sqlite3'
 import icon from '../../resources/icon.png?asset'
-import { Routes } from './ipc/user.routes'
-
-let db
+import { RegisterAuthIpcs } from './ipc/ipcRegister'
+import { closeDB } from './config/db'
 
 function createWindow() {
   // Create the browser window.
@@ -17,7 +15,9 @@ function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false
     }
   })
   mainWindow.setAlwaysOnTop(true, 'screen')
@@ -45,12 +45,7 @@ function createWindow() {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
-  const dbPath = path.join(app.getAppPath(), 'db', 'mibase.db')
-  db = new Database(dbPath)
-
-  //Rutas de comunicacion ipc
-  Routes(ipcMain, db)
-
+  RegisterAuthIpcs(ipcMain)
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -69,6 +64,9 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
+
+// Cerrar base de datos al salir
+app.on('before-quit', closeDB)
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

@@ -4,3 +4,6 @@ out
 .DS_Store
 .eslintcache
 *.log*
+db/*.db
+db/*.db-wal
+db/*.db-shm

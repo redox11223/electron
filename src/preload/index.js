@@ -1,9 +1,16 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { userApi } from './api/userApi'
+import { productApi } from './api/productApi'
+import { clienteApi } from './api/clienteApi'
+import { ventaApi } from './api/ventaApi'
 
 // Custom APIs for renderer
 const api = {
-  getUsers: () => ipcRenderer.invoke('get-users')
+  users: userApi,
+  products: productApi,
+  clients: clienteApi,
+  venta: ventaApi
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
