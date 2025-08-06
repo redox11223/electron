@@ -1,6 +1,6 @@
 export const Routes = (ipcMain, db) => {
   ipcMain.handle('get-users', () => {
-    const stmt = db.prepare('SELECT * FROM test')
+    const stmt = db.prepare('SELECT * FROM productos')
     const users = stmt.all()
     return users
   })

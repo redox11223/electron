@@ -1,61 +1,74 @@
-import  { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // Importamos el hook useNavigate de React Router DOM
-//import 'bootstrap/dist/css/bootstrap.min.css';
-//import './assets/base.css';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+//import portada from "./assets/havc.jpg";
+import portada from "./assets/img3.jpg";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();  // Hook para redirigir a otras rutas
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Lógica de validación de login
     console.log(`Email: ${email}, Password: ${password}`);
-    // Redirige a la pantalla principal (dashboard) después de hacer login
-    //navigate('/dashboard');
     navigate('/dashboard', { state: { email } });
   };
 
-  
-
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2>LOGIN</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <div className="container-fluid vh-100">
+      <div className="row h-100">
+        {/* Columna 1: Imagen */}
+        <div className="col-9 p-0 position-relative">
+          <img 
+            src={portada} 
+            alt="Login" 
+            className="w-100 h-100"
+            style={{ 
+              objectFit: 'cover',
+              objectPosition: 'center'
+            }}
+          />
+        </div>
+        
+        {/* Columna 2: Formulario de Login */}
+        <div className="col-3 d-flex align-items-center justify-content-center"  style={{ backgroundColor: '#2e2e3e' }}>
+          <div className="login-container w-100" style={{ maxWidth: '400px' }}>
+            <div className="login-box p-4">
+              <h2 className="text-center mb-4" style={{ color: '#ffffff' }}>INICIO</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group mb-3">
+                  <input
+                    type="email"
+                    className="form-control"
+                    placeholder="Usuario"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    requiredstyle={{ backgroundColor: '#2e2e3e' }}
+                  />
+                </div>
+                <div className="form-group mb-3">
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group mb-3 text-end">
+                  <br />
+                </div>
+                <div className="form-group mb-3">
+                  <button type="submit" className="  w-100 btn-login"  >
+                    <span>&rarr;</span> Ingresar
+                  </button>
+                </div>
+              
+              </form>
+            </div>
           </div>
-          <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <a href="#">Forget Password?</a>
-          </div>
-          <div className="form-group">
-            <button type="submit" className="btn btn-primary">
-              <span>&rarr;</span> Login
-            </button>
-          </div>
-          <div className="form-group">
-            <p>Not a Member? <a href="#">Sign up</a></p>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

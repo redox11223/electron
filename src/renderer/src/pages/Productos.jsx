@@ -3,7 +3,7 @@ import '../assets/productos.css'
 export const Productos = () => {
   return (
     <>
-      <h2>Productos</h2>
+      <h2>Venta</h2>
       <div className="productos-container">
         <div className="row">
           <div className="col-md-12">

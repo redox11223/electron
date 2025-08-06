@@ -2,7 +2,7 @@
 import { RouterProvider } from 'react-router-dom';
 import router from './router/routes';  // Importamos las rutas definidas en routes.js
 
-import electronLogo from './assets/electron.svg'
+
 
 const App = () => {
   const ipcHandle = () => window.electron.ipcRenderer.send('ping')

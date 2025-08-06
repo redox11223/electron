@@ -1,3 +1,4 @@
+
 .productos-container {
   display: flex;
   flex-direction: column;  /* Coloca las filas (row) de manera vertical */
@@ -5,13 +6,10 @@
 
 .row {
   display: flex;
-  justify-content: space-between;  /* Espacio entre columnas */
-  margin-bottom: 10px;  /* Espacio entre filas */
-}
-
+  margin-bottom: 10px;  
 .col {
-  flex: 1;  /* Cada columna toma un espacio proporcional */
+  flex: 1; 
   padding: 10px;
   background-color: lightgray;
-  margin: 5px;
+
 }
