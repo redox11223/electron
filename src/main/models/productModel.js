@@ -54,4 +54,17 @@ export class ProductModel {
       throw new Error(`Error al buscar productos: ${error.message}`)
     }
   }
+  
+  updateStock(id_producto, cantidad) {
+    try {
+      const stmt = this.db.prepare('UPDATE productos SET stock = stock - ? WHERE id_producto = ?')
+      const result = stmt.run(cantidad, id_producto)
+      if (result.changes === 0) {
+        throw new Error('Producto no encontrado o no se pudo actualizar el stock')
+      }
+      return result
+    } catch (error) {
+      throw new Error(`Error al actualizar el stock: ${error.message}`)
+    }
+  }
 }

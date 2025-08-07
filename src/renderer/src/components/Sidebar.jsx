@@ -60,7 +60,7 @@ import { MdProductionQuantityLimits } from 'react-icons/md'
 import '../assets/base.css'
 
 const Sidebar = ({ setActiveView }) => {
-  const [activeSection, setActiveSection] = useState('inventario') // Sección activa por defecto
+  const [activeSection, setActiveSection] = useState('productos') // Sección activa por defecto
 
   const handleSectionClick = (section) => {
     setActiveSection(section)

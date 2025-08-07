@@ -1,17 +1,36 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-//import portada from "./assets/havc.jpg";
+
 import portada from './assets/img3.jpg'
+import { useValidateUser } from './hooks/validateUser'
 
 const Login = () => {
-  const [email, setEmail] = useState('')
+  const [nombre_usuario, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const validateUser = useValidateUser()
   const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log(`Email: ${email}, Password: ${password}`)
-    navigate('/dashboard', { state: { email } })
+    validateUser.mutate(
+      { nombre_usuario, password },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            console.log('Usuario válido:', data.message)
+            console.log(`Email: ${nombre_usuario}, Password: ${password}`)
+            navigate('/dashboard', { state: { nombre_usuario } })
+          } else {
+            alert('Credenciales incorrectas')
+            setEmail('')
+            setPassword('')
+          }
+        },
+        onError: (error) => {
+          console.error('Error en el Login', error)
+        }
+      }
+    )
   }
 
   return (
@@ -43,12 +62,11 @@ const Login = () => {
               <form onSubmit={handleSubmit}>
                 <div className="form-group mb-3">
                   <input
-                    type="email"
+                    type="text"
                     className="form-control"
                     placeholder="Usuario"
-                    value={email}
+                    value={nombre_usuario}
                     onChange={(e) => setEmail(e.target.value)}
-                    requiredstyle={{ backgroundColor: '#2e2e3e' }}
                   />
                 </div>
                 <div className="form-group mb-3">
@@ -66,7 +84,7 @@ const Login = () => {
                 </div>
                 <div className="form-group mb-3">
                   <button type="submit" className="  w-100 btn-login">
-                    <span>&rarr;</span> Ingresar
+                    Ingresar
                   </button>
                 </div>
               </form>

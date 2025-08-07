@@ -12,7 +12,7 @@ export const MainContent = ({ activeView }) => {
       style={{
         paddingLeft: '32px',
         paddingTop: '24px',
-        background: 'white'
+        background: '#f3f0f5'
       }}
     >
       {activeView === 'productos' && <Productos />}

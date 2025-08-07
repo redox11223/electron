@@ -16,6 +16,16 @@ export class ClienteEmpresaController {
         return { success: false, error: error.message }
       }
     })
+    
+    ipcMain.handle('search-clientes', (event, searchTerm) => {
+      try {
+        const clientes = this.clienteModel.searchClientes(searchTerm)
+        return { success: true, data: clientes }
+      } catch (error) {
+        console.error('Error al buscar clientes', error)
+        return { success: false, error: error.message }
+      }
+    })
   }
   createClientePersona(data) {
     const transaction = this.db.transaction((data) => {

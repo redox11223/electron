@@ -14,7 +14,7 @@ export const Layout = ({ userEmail }) => {
         <div className="col-1">
           <Sidebar setActiveView={setActiveView} />
         </div>
-        <div className="col-11">
+        <div className="col-11" >
           <MainContent activeView={activeView} />
         </div>
       </div>

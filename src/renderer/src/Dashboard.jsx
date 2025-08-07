@@ -18,7 +18,7 @@ import Layout from './components/Layout'
 
 const Dashboard = () => {
   const location = useLocation()
-  const email = location.state?.email // Recuperamos el email pasado desde Login
+  const email = location.state?.nombre_usuario // Recuperamos el email pasado desde Login
   console.log(email)
   return (
     <>

@@ -19,10 +19,17 @@ export class UserModel {
     }
   }
   getUserCredentials({ nombre_usuario, password }) {
-    const stmt = this.db.prepare(
-      'SELECT nombre_usuario,password FROM usuario WHERE nombre_usuario=? AND password=?'
-    )
-    const result = stmt.get(nombre_usuario, password)
-    return result
+    try {
+      const stmt = this.db.prepare(
+        'SELECT nombre_usuario,password FROM usuario WHERE nombre_usuario=? AND password=?'
+      )
+      const result = stmt.get(nombre_usuario, password)
+      return result
+
+    } catch (error) {
+      throw new Error(`Error al obtener las credenciales: ${error.message}`)
+
+    }
+
   }
 }

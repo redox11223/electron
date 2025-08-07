@@ -2,11 +2,14 @@
 .productos-container {
   display: flex;
   flex-direction: column;  /* Coloca las filas (row) de manera vertical */
+  
 }
 
 .row {
   display: flex;
-  margin-bottom: 10px;  
+  margin-bottom: 10px; 
+  
+}
 .col {
   flex: 1; 
   padding: 10px;
