@@ -18,11 +18,17 @@ import Layout from './components/Layout'
 
 const Dashboard = () => {
   const location = useLocation()
-  const email = location.state?.nombre_usuario // Recuperamos el email pasado desde Login
-  console.log(email)
+  const userInfo = {
+    nombre_usuario: location.state?.nombre_usuario,
+    nombre_rol: location.state?.nombre_rol,
+    id_usuario: location.state?.id_usuario
+  }
+  
+  console.log('Información del usuario:', userInfo)
+  
   return (
     <>
-      <Layout userEmail={email} /> {/* Pasamos el email a Layout */}
+      <Layout userInfo={userInfo} /> {/* Pasamos toda la información del usuario a Layout */}
     </>
   )
 }

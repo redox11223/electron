@@ -112,7 +112,7 @@ const Sidebar = ({ setActiveView }) => {
         <li onClick={() => handleSectionClick('logout')}>
           <div className={`sidebar-link-vertical ${activeSection === 'logout' ? 'active' : ''}`}>
             <FaSignOutAlt size={20} style={{ marginRight: 8 }} />
-            LOG OUT
+            Cerrar Sesión
           </div>
         </li>
       </div>

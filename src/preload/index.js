@@ -4,13 +4,17 @@ import { userApi } from './api/userApi'
 import { productApi } from './api/productApi'
 import { clienteApi } from './api/clienteApi'
 import { ventaApi } from './api/ventaApi'
+import { proveedorApi } from './api/proveedorApi'
+import { comprasApi } from './api/comprasApi'
 
 // Custom APIs for renderer
 const api = {
   users: userApi,
   products: productApi,
   clients: clienteApi,
-  venta: ventaApi
+  venta: ventaApi,
+  proveedores: proveedorApi,
+  compras: comprasApi
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

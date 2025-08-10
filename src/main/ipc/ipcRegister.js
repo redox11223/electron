@@ -3,6 +3,8 @@ import { ProductController } from '../controllers/productController'
 import { UserController } from '../controllers/userController'
 import { UserPersonaController } from '../controllers/userPersonaController'
 import { VentaController } from '../controllers/ventaController'
+import { ProveedorController } from '../controllers/proveedorController'
+import { CompraController } from '../controllers/compraController'
 import { dbConfig } from '../config/db'
 
 export const RegisterIpcs = (ipcMain, db) => {
@@ -11,27 +13,37 @@ export const RegisterIpcs = (ipcMain, db) => {
   const clienteEmpresaController = new ClienteEmpresaController(db)
   const ventaController = new VentaController(db)
   const userController = new UserController(db)
+  const proveedorController = new ProveedorController(db)
+  const compraController = new CompraController(db)
 
   userController.register(ipcMain)
   productController.register(ipcMain)
   userPersonaController.register(ipcMain)
   clienteEmpresaController.register(ipcMain)
   ventaController.register(ipcMain)
+  proveedorController.register(ipcMain)
+  compraController.register(ipcMain)
 }
 
 export const RegisterAuthIpcs = (ipcMain) => {
   ipcMain.handle('validate-user', async (event, userLogin) => {
     try {
+      console.log('RegisterAuthIpcs - Datos recibidos:', userLogin) // Debug
       // AHORA creamos la conexión para validar
       const db = dbConfig()
       const userController = new UserController(db)
 
       const result = await userController.validateUser(userLogin)
+      console.log('RegisterAuthIpcs - Resultado:', result) // Debug
 
       if (result.success) {
         // Login exitoso: AHORA registrar todos los IPCs
         RegisterIpcs(ipcMain, db)
-        return { success: true, message: result.message }
+        return { 
+          success: true, 
+          message: result.message,
+          user: result.user // Agregar los datos del usuario
+        }
       }
 
       return { success: false, error: result.error }

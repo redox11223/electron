@@ -1,4 +1,4 @@
-import './assets/main.css'
+
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './assets/base.css'
 import { StrictMode } from 'react'
@@ -22,7 +22,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <App />
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/*<ReactQueryDevtools initialIsOpen={false} />*/}
     </QueryClientProvider>
   </StrictMode>
 )

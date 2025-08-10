@@ -4,12 +4,12 @@ import Header from './Header'
 import { MainContent } from './MainContent'
 import Sidebar from './Sidebar'
 
-export const Layout = ({ userEmail }) => {
+export const Layout = ({ userInfo }) => {
   const [activeView, setActiveView] = useState('productos')
 
   return (
     <div className="container-fluid p-0">
-      <Header userEmail={userEmail} />
+      <Header userInfo={userInfo} />
       <div className="row g-0" style={{ minHeight: 'calc(100vh - 80px)', marginTop: '80px' }}>
         <div className="col-1">
           <Sidebar setActiveView={setActiveView} />

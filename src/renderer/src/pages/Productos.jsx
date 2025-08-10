@@ -66,24 +66,22 @@ export const Productos = () => {
       })
     }
 
-    // Filtrar por rango de precio
-    if (priceRange) {
-      filtered = filtered.filter(producto => {
-        const precio = producto.precio_venta || 0
-        switch (priceRange) {
-          case '<50':
-            return precio < 50
-          case '50-100':
-            return precio >= 50 && precio <= 100
-          case '>100':
-            return precio > 100
-          default:
-            return true
-        }
-      })
-    }
-
-    return filtered
+        // Filtrar por rango de precio
+        if (priceRange) {
+          filtered = filtered.filter(producto => {
+            const precio = producto.precio_unitario || 0
+            switch (priceRange) {
+              case '<50':
+                return precio < 50
+              case '50-100':
+                return precio >= 50 && precio <= 100
+              case '>100':
+                return precio > 100
+              default:
+                return true
+            }
+          })
+        }    return filtered
   }, [productos, searchTerm, filterType, priceRange])
 
   const handleRefresh = () => {
@@ -110,7 +108,7 @@ export const Productos = () => {
         const newProduct = {
           id_producto: producto.id_producto,
           nombre_producto: producto.nombre_producto,
-          precio_venta: producto.precio_venta,
+          precio_unitario: producto.precio_unitario,
           cantidad: 1,
           stock: producto.stock
         }
@@ -142,7 +140,7 @@ export const Productos = () => {
   }
 
   const calculateTotal = () => {
-    return selectedProducts.reduce((total, item) => total + (item.precio_venta * item.cantidad), 0).toFixed(2)
+    return selectedProducts.reduce((total, item) => total + (item.precio_unitario * item.cantidad), 0).toFixed(2)
   }
 
   const handleClienteSelect = (cliente) => {
@@ -274,15 +272,19 @@ export const Productos = () => {
               ) : filteredProducts.length > 0 ? (
                 filteredProducts.map((producto) => (
                   <div key={producto.id_producto} className="col-md-4 mb-3">
-                    <div className="card h-100 shadow-sm">
+                    <div 
+                      className={`card h-100 shadow-sm product-card ${producto.stock === 0 ? 'disabled' : ''}`}
+                      onClick={() => producto.stock > 0 && handleAddToCart(producto)}
+                      style={{ userSelect: 'none' }}
+                    >
                       <div className="card-body d-flex flex-column">
                         <h5 className="card-title">{producto.nombre_producto}</h5>
                         <p className="card-text flex-grow-1 text-muted">
                           {producto.modelo || 'Sin descripción disponible'}
                         </p>
                         <div className="mt-auto">
-                          <h6 className="text-success mb-2">
-                            Precio: ${producto.precio_venta?.toFixed(2) || '0.00'}
+                          <h6 className="text-dark mb-2">
+                            Precio: ${producto.precio_unitario?.toFixed(2) || '0.00'}
                           </h6>
                           {producto.stock !== undefined && (
                             <small className="text-muted d-block mb-2">
@@ -291,11 +293,15 @@ export const Productos = () => {
                           )}
                           <div className="d-grid gap-2">
                             <button
-                              className="btn  btn-sm" style={{backgroundColor: '#8B45FF', color: '#fff'}}
-                              onClick={() => handleAddToCart(producto)}
+                              className="btn btn-sm" 
+                              style={{backgroundColor: '#8B45FF', color: '#fff'}}
+                              onClick={(e) => {
+                                e.stopPropagation(); // Evitar doble click
+                                handleAddToCart(producto);
+                              }}
                               disabled={producto.stock === 0}
                             >
-                              {producto.stock === 0 ? 'Sin Stock' : 'Agregar al Carrito'}
+                              {producto.stock === 0 ? 'Sin Stock' : 'Agregar'}
                             </button>
                           </div>
                         </div>
@@ -343,11 +349,11 @@ export const Productos = () => {
                             <div className="flex-grow-1">
                               <div className="fw-bold text-dark">{item.nombre_producto}</div>
                               <div className="small text-muted">
-                                Precio unitario: ${item.precio_venta.toFixed(2)} • Stock: {item.stock}
+                                Precio unitario: ${item.precio_unitario.toFixed(2)} • Stock: {item.stock}
                               </div>
                             </div>
                             <button 
-                              className="btn btn-outline-danger btn-sm" 
+                              className="btn btn-outline-dark btn-sm" 
                               style={{ fontSize: '12px', padding: '4px 8px' }}
                               onClick={() => handleRemoveFromCart(item.id_producto)}
                               title="Eliminar producto"
@@ -371,7 +377,7 @@ export const Productos = () => {
                             </div>
                             <div className="text-end">
                               <div className="fw-bold text-success">
-                                ${(item.precio_venta * item.cantidad).toFixed(2)}
+                                ${(item.precio_unitario * item.cantidad).toFixed(2)}
                               </div>
                             </div>
                           </div>

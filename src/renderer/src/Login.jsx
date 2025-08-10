@@ -1,3 +1,5 @@
+
+
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,15 +18,12 @@ const Login = () => {
       { nombre_usuario, password },
       {
         onSuccess: (data) => {
-          if (data.success) {
-            console.log('Usuario válido:', data.message)
-            console.log(`Email: ${nombre_usuario}, Password: ${password}`)
-            navigate('/dashboard', { state: { nombre_usuario } })
-          } else {
-            alert('Credenciales incorrectas')
-            setEmail('')
-            setPassword('')
-          }
+          console.log('Usuario válido:', data.message)
+           navigate('/dashboard', { state: { 
+              nombre_usuario: data.user.nombre_usuario,
+              nombre_rol: data.user.nombre_rol,
+              id_usuario: data.user.id_usuario
+            } })
         },
         onError: (error) => {
           console.error('Error en el Login', error)
@@ -33,6 +32,14 @@ const Login = () => {
     )
   }
 
+  const handleInput = (setter) => {
+    return (e) => {
+      if (validateUser.isError) {
+        validateUser.reset()
+      }
+      setter(e.target.value)
+    }
+  }
   return (
     <div className="container-fluid vh-100">
       <div className="row h-100">
@@ -59,6 +66,11 @@ const Login = () => {
               <h2 className="text-center mb-4" style={{ color: '#ffffff' }}>
                 INICIO
               </h2>
+              {validateUser.isError && (
+                <div className="alert alert-danger mb-3">
+                  <small>{validateUser.error?.message}</small>
+                </div>
+              )}
               <form onSubmit={handleSubmit}>
                 <div className="form-group mb-3">
                   <input
@@ -66,7 +78,7 @@ const Login = () => {
                     className="form-control"
                     placeholder="Usuario"
                     value={nombre_usuario}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleInput(setEmail)}
                   />
                 </div>
                 <div className="form-group mb-3">
@@ -75,7 +87,7 @@ const Login = () => {
                     className="form-control"
                     placeholder="Contraseña"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handleInput(setPassword)}
                     required
                   />
                 </div>
@@ -96,4 +108,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Login
