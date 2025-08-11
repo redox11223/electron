@@ -210,7 +210,7 @@ export const Proveedores = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestión de Proveedores</h2>
         <button 
-          className="btn btn-primary"
+          className="btn" style={{ backgroundColor: '#8B45FF', color: '#fff' }}
           onClick={() => handleOpenModal('create')}
         >
           <FaPlus className="me-2" />

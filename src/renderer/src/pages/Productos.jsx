@@ -69,7 +69,7 @@ export const Productos = () => {
         // Filtrar por rango de precio
         if (priceRange) {
           filtered = filtered.filter(producto => {
-            const precio = producto.precio_unitario || 0
+            const precio = producto.precio_venta || 0
             switch (priceRange) {
               case '<50':
                 return precio < 50
@@ -108,7 +108,7 @@ export const Productos = () => {
         const newProduct = {
           id_producto: producto.id_producto,
           nombre_producto: producto.nombre_producto,
-          precio_unitario: producto.precio_unitario,
+          precio_venta: producto.precio_venta,
           cantidad: 1,
           stock: producto.stock
         }
@@ -140,7 +140,7 @@ export const Productos = () => {
   }
 
   const calculateTotal = () => {
-    return selectedProducts.reduce((total, item) => total + (item.precio_unitario * item.cantidad), 0).toFixed(2)
+    return selectedProducts.reduce((total, item) => total + (item.precio_venta * item.cantidad), 0).toFixed(2)
   }
 
   const handleClienteSelect = (cliente) => {
@@ -207,7 +207,9 @@ export const Productos = () => {
         <div className="row">
           {/* Columna izquierda - Lista de productos */}
           <div className="col-md-8">
-            <h2>Venta</h2>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h2>Venta</h2>
+            </div>
             <div className="row">
               <div className="col-md-6">
                 <input
@@ -284,7 +286,7 @@ export const Productos = () => {
                         </p>
                         <div className="mt-auto">
                           <h6 className="text-dark mb-2">
-                            Precio: ${producto.precio_unitario?.toFixed(2) || '0.00'}
+                            Precio: ${producto.precio_venta?.toFixed(2) || '0.00'}
                           </h6>
                           {producto.stock !== undefined && (
                             <small className="text-muted d-block mb-2">
@@ -349,7 +351,7 @@ export const Productos = () => {
                             <div className="flex-grow-1">
                               <div className="fw-bold text-dark">{item.nombre_producto}</div>
                               <div className="small text-muted">
-                                Precio unitario: ${item.precio_unitario.toFixed(2)} • Stock: {item.stock}
+                                Precio Venta: ${item.precio_venta.toFixed(2)} • Stock: {item.stock}
                               </div>
                             </div>
                             <button 
@@ -377,7 +379,7 @@ export const Productos = () => {
                             </div>
                             <div className="text-end">
                               <div className="fw-bold text-success">
-                                ${(item.precio_unitario * item.cantidad).toFixed(2)}
+                                ${(item.precio_venta * item.cantidad).toFixed(2)}
                               </div>
                             </div>
                           </div>

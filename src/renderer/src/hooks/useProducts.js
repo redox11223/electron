@@ -56,3 +56,37 @@ export const useRefreshProducts = () => {
     queryClient.invalidateQueries({ queryKey: ['products'] })
   }
 }
+
+// Hook específico para gestión de productos con información completa
+export const useProductsManagement = () => {
+  return useQuery({
+    queryKey: ['products-management'],
+    queryFn: async () => {
+      const response = await window.api.products.getProductsForManagement()
+      if (!response.success) {
+        throw new Error(response.error || 'Error al cargar productos para gestión')
+      }
+      return response.data
+    },
+  })
+}
+
+// Hook para actualizar un producto
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: async (productData) => {
+      const response = await window.api.products.updateProduct(productData)
+      if (!response.success) {
+        throw new Error(response.error || 'Error al actualizar producto')
+      }
+      return response.data
+    },
+    onSuccess: () => {
+      // Invalidar y refrescar tanto los productos generales como los de gestión
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      queryClient.invalidateQueries({ queryKey: ['products-management'] })
+    },
+  })
+}

@@ -9,5 +9,11 @@ export const productApi = {
   },
   filterProducts: (filterOptions) => {
     return ipcRenderer.invoke('filter-products', filterOptions)
+  },
+  getProductsForManagement: () => {
+    return ipcRenderer.invoke('get-products-management')
+  },
+  updateProduct: (productData) => {
+    return ipcRenderer.invoke('update-product', productData)
   }
 }

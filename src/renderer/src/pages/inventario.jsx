@@ -1,21 +1,23 @@
 import { useState, useMemo } from 'react'
 import { FaInfoCircle, FaPlus, FaTrash, FaSearch } from 'react-icons/fa'
 import { SeccionOrden } from './SeccionOrden'
+import { GestionProducto } from './GestionProducto'
 import { useCompras } from '../hooks/useCompras'
 import { useProveedores } from '../hooks/useProveedores'
 
 export const Inventario = () => {
   const [showNuevaOrden, setShowNuevaOrden] = useState(false)
+  const [showGestionProducto, setShowGestionProducto] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedProveedor, setSelectedProveedor] = useState('')
   const [selectedEstado, setSelectedEstado] = useState('')
-  
+
   // Estados para modales
   const [showDetalleModal, setShowDetalleModal] = useState(false)
   const [showEstadoModal, setShowEstadoModal] = useState(false)
   const [selectedCompra, setSelectedCompra] = useState(null)
   const [newEstado, setNewEstado] = useState('PENDIENTE')
-  
+
   // Hooks para obtener datos
   const { compras, isLoading: loadingCompras, updateEstado, isUpdatingEstado, useCompraById } = useCompras()
   const { proveedores, isLoading: loadingProveedores } = useProveedores()
@@ -31,19 +33,27 @@ export const Inventario = () => {
     setShowNuevaOrden(false)
   }
 
+  const handleGestionProducto = () => {
+    setShowGestionProducto(true)
+  }
+
+  const handleVolverDesdeGestion = () => {
+    setShowGestionProducto(false)
+  }
+
   // Filtrar compras basado en los criterios de búsqueda
   const filteredCompras = useMemo(() => {
     if (!compras) return []
-    
+
     return compras.filter(compra => {
-      const matchesSearch = searchTerm === '' || 
+      const matchesSearch = searchTerm === '' ||
         compra.id_compra.toString().includes(searchTerm) ||
         (compra.proveedor_nombre && compra.proveedor_nombre.toLowerCase().includes(searchTerm.toLowerCase()))
-      
+
       const matchesProveedor = selectedProveedor === '' || compra.id_proveedor.toString() === selectedProveedor
-      
+
       const matchesEstado = selectedEstado === '' || compra.estado.toLowerCase() === selectedEstado.toLowerCase()
-      
+
       return matchesSearch && matchesProveedor && matchesEstado
     })
   }, [compras, searchTerm, selectedProveedor, selectedEstado])
@@ -91,9 +101,9 @@ export const Inventario = () => {
 
   const handleUpdateEstado = () => {
     if (selectedCompra && newEstado !== selectedCompra.estado) {
-      updateEstado({ 
-        id: selectedCompra.id_compra, 
-        estado: newEstado 
+      updateEstado({
+        id: selectedCompra.id_compra,
+        estado: newEstado
       })
       handleCloseModals()
     }
@@ -104,17 +114,30 @@ export const Inventario = () => {
     return <SeccionOrden onVolver={handleVolverInventario} />
   }
 
+  // Si está en modo gestión de productos, mostrar GestionProducto
+  if (showGestionProducto) {
+    return <GestionProducto onVolver={handleVolverDesdeGestion} />
+  }
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Control de Stock</h2>
-        <button 
-          className="btn btn-primary"
-          onClick={handleNuevaOrden}
-        >
-          <FaPlus className="me-2" />
-          Nueva Orden
-        </button>
+        <div>
+          <button
+            className="btn" style={{ backgroundColor: '#8B45FF', color: '#fff' ,marginRight: '20px'}}
+            onClick={handleNuevaOrden}
+          >
+            <FaPlus className="me-2" />
+            Nueva Orden
+          </button>
+          <button
+            className="btn" style={{ backgroundColor: '#8B45FF', color: '#fff',marginRight: '20px' }}
+            onClick={handleGestionProducto}
+          >
+            Gestión de Productos
+          </button>
+        </div>
       </div>
 
       <div className="row mb-4">
@@ -201,14 +224,14 @@ export const Inventario = () => {
                       <td>{compra.proveedor_nombre || 'Proveedor no disponible'}</td>
                       <td>{formatAmount(compra.monto)}</td>
                       <td>
-                        <button 
+                        <button
                           className="btn btn-outline-info btn-sm me-2"
                           onClick={() => handleShowDetalle(compra)}
                           title="Ver detalles"
                         >
                           <FaInfoCircle />
                         </button>
-                        <button 
+                        <button
                           className="btn btn-warning btn-sm"
                           onClick={() => handleShowEstado(compra)}
                           disabled={isUpdatingEstado}
@@ -232,9 +255,9 @@ export const Inventario = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Detalles de la Orden #{selectedCompra.id_compra}</h5>
-                <button 
-                  type="button" 
-                  className="btn-close" 
+                <button
+                  type="button"
+                  className="btn-close"
                   onClick={handleCloseModals}
                 ></button>
               </div>
@@ -285,14 +308,14 @@ export const Inventario = () => {
                         </tr>
                       </tbody>
                     </table>
-                    
+
                     <h6 className="text-primary mt-3">Información del Usuario</h6>
                     <table className="table table-sm">
                       <tbody>
                         <tr>
                           <td><strong>Usuario:</strong></td>
                           <td>
-                            {selectedCompra.usuario_nombre && selectedCompra.usuario_apellido 
+                            {selectedCompra.usuario_nombre && selectedCompra.usuario_apellido
                               ? `${selectedCompra.usuario_nombre} ${selectedCompra.usuario_apellido}`
                               : 'No disponible'
                             }
@@ -359,9 +382,9 @@ export const Inventario = () => {
                 </div>
               </div>
               <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary" 
+                <button
+                  type="button"
+                  className="btn btn-secondary"
                   onClick={handleCloseModals}
                 >
                   Cerrar
@@ -379,9 +402,9 @@ export const Inventario = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Cambiar Estado - Orden #{selectedCompra.id_compra}</h5>
-                <button 
-                  type="button" 
-                  className="btn-close" 
+                <button
+                  type="button"
+                  className="btn-close"
                   onClick={handleCloseModals}
                 ></button>
               </div>
@@ -394,12 +417,12 @@ export const Inventario = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="mb-3">
                   <label htmlFor="nuevoEstado" className="form-label">Nuevo Estado:</label>
-                  <select 
+                  <select
                     id="nuevoEstado"
-                    className="form-select" 
+                    className="form-select"
                     value={newEstado}
                     onChange={(e) => setNewEstado(e.target.value)}
                   >
@@ -418,16 +441,16 @@ export const Inventario = () => {
                 )}
               </div>
               <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary" 
+                <button
+                  type="button"
+                  className="btn btn-secondary"
                   onClick={handleCloseModals}
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="button" 
-                  className="btn btn-primary" 
+                <button
+                  type="button"
+                  className="btn btn-primary"
                   onClick={handleUpdateEstado}
                   disabled={isUpdatingEstado || newEstado === selectedCompra.estado}
                 >

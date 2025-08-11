@@ -1,12 +1,12 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { FaArrowLeft, FaSearch, FaPlus, FaTrash, FaEdit } from 'react-icons/fa'
-import { useProducts } from '../hooks/useProducts'
+import { useProductsManagement } from '../hooks/useProducts'
 import { useProveedores } from '../hooks/useProveedores'
 import { useCompras } from '../hooks/useCompras'
 
 export const SeccionOrden = ({ onVolver }) => {
-  const { data: productos = [], isLoading: loadingProducts } = useProducts()
+  const { data: productos = [], isLoading: loadingProducts } = useProductsManagement()
   const { proveedores, isLoading: loadingProveedores } = useProveedores()
   const { createCompra, isCreating, createError, isCreateSuccess } = useCompras()
   
@@ -25,6 +25,7 @@ export const SeccionOrden = ({ onVolver }) => {
   // Referencias para dropdowns
   const proveedorDropdownRef = useRef(null)
   const productDropdownRef = useRef(null)
+  const categoriaDropdownRef = useRef(null)
   
   // Estado para el formulario de producto individual
   const [formData, setFormData] = useState({
@@ -32,7 +33,9 @@ export const SeccionOrden = ({ onVolver }) => {
     modelo: '',
     descripcion: '',
     cantidad: '',
-    precio_unitario: ''
+    precio_unitario: '',
+    categoria: '',
+    id_categoria: ''
   })
   
   // Estado para la orden completa
@@ -53,6 +56,11 @@ export const SeccionOrden = ({ onVolver }) => {
   const [showProveedorSuggestions, setShowProveedorSuggestions] = useState(false)
   const [selectedProveedor, setSelectedProveedor] = useState(null)
 
+  // Estados para búsqueda de categorías
+  const [categoriaSearchTerm, setCategoriaSearchTerm] = useState('')
+  const [showCategoriaSuggestions, setShowCategoriaSuggestions] = useState(false)
+  const [selectedCategoria, setSelectedCategoria] = useState(null)
+
   // Filtrar productos basado en el término de búsqueda
   const filteredProducts = useMemo(() => {
     if (!searchTerm.trim()) return []
@@ -72,6 +80,33 @@ export const SeccionOrden = ({ onVolver }) => {
       proveedor.numero_ruc?.includes(proveedorSearchTerm)
     ).slice(0, 5)
   }, [proveedores, proveedorSearchTerm])
+
+  // Obtener categorías únicas de los productos
+  const categorias = useMemo(() => {
+    if (!productos.length) return []
+    
+    const categoriasMap = new Map()
+    
+    productos.forEach(producto => {
+      if (producto.nombre_categoria && producto.id_categoria) {
+        categoriasMap.set(producto.id_categoria, {
+          id: producto.id_categoria,
+          nombre: producto.nombre_categoria
+        })
+      }
+    })
+    
+    return Array.from(categoriasMap.values())
+  }, [productos])
+
+  // Filtrar categorías basado en el término de búsqueda
+  const filteredCategorias = useMemo(() => {
+    if (!categoriaSearchTerm.trim()) return []
+    
+    return categorias.filter(categoria =>
+      categoria.nombre?.toLowerCase().includes(categoriaSearchTerm.toLowerCase())
+    ).slice(0, 5)
+  }, [categorias, categoriaSearchTerm])
 
   // Calcular total de la orden
   const totalOrden = useMemo(() => {
@@ -125,9 +160,20 @@ export const SeccionOrden = ({ onVolver }) => {
       nombre_producto: producto.nombre_producto,
       modelo: producto.modelo || '',
       descripcion: producto.descripcion || '',
-      precio_unitario: producto.precio_unitario || ''
+      precio_unitario: producto.precio_unitario || '',
+      categoria: producto.nombre_categoria || '',
+      id_categoria: producto.id_categoria || ''
     }))
     setShowSuggestions(false)
+    
+    // También actualizar la categoría si el producto la tiene
+    if (producto.nombre_categoria) {
+      setCategoriaSearchTerm(producto.nombre_categoria)
+      setSelectedCategoria({
+        id: producto.id_categoria,
+        nombre: producto.nombre_categoria
+      })
+    }
   }
 
   // Funciones para manejar proveedores
@@ -161,16 +207,51 @@ export const SeccionOrden = ({ onVolver }) => {
     setShowProveedorSuggestions(false)
   }
 
+  // Funciones para manejar categorías
+  const handleCategoriaSearch = (e) => {
+    const value = e.target.value
+    setCategoriaSearchTerm(value)
+    setFormData(prev => ({
+      ...prev,
+      categoria: value
+    }))
+    setShowCategoriaSuggestions(value.length > 0)
+    
+    // Limpiar selección si el usuario modifica el texto
+    if (selectedCategoria && selectedCategoria.nombre !== value) {
+      setSelectedCategoria(null)
+      setFormData(prev => ({
+        ...prev,
+        id_categoria: ''
+      }))
+    }
+  }
+
+  const handleCategoriaSelect = (categoria) => {
+    setSelectedCategoria(categoria)
+    setCategoriaSearchTerm(categoria.nombre)
+    setFormData(prev => ({
+      ...prev,
+      categoria: categoria.nombre,
+      id_categoria: categoria.id
+    }))
+    setShowCategoriaSuggestions(false)
+  }
+
   const resetFormData = () => {
     setFormData({
       nombre_producto: '',
       modelo: '',
       descripcion: '',
       cantidad: '',
-      precio_unitario: ''
+      precio_unitario: '',
+      categoria: '',
+      id_categoria: ''
     })
     setSearchTerm('')
     setSelectedProduct(null)
+    setCategoriaSearchTerm('')
+    setSelectedCategoria(null)
     setEditingIndex(-1)
   }
 
@@ -190,7 +271,10 @@ export const SeccionOrden = ({ onVolver }) => {
       descripcion: formData.descripcion,
       cantidad: parseInt(formData.cantidad),
       precio_unitario: parseFloat(formData.precio_unitario),
-      es_producto_nuevo: !selectedProduct
+      categoria: formData.categoria,
+      id_categoria: formData.id_categoria || null,
+      es_producto_nuevo: !selectedProduct,
+      es_categoria_nueva: !selectedCategoria && formData.categoria.trim() !== ''
     }
 
     if (editingIndex >= 0) {
@@ -216,15 +300,26 @@ export const SeccionOrden = ({ onVolver }) => {
       modelo: producto.modelo || '',
       descripcion: producto.descripcion || '',
       cantidad: producto.cantidad.toString(),
-      precio_unitario: producto.precio_unitario.toString()
+      precio_unitario: producto.precio_unitario.toString(),
+      categoria: producto.categoria || '',
+      id_categoria: producto.id_categoria || ''
     })
     setSearchTerm(producto.nombre_producto)
+    setCategoriaSearchTerm(producto.categoria || '')
     setEditingIndex(index)
     
     // Si es un producto existente, marcarlo como seleccionado
     if (producto.id_producto) {
       const productoExistente = productos.find(p => p.id_producto === producto.id_producto)
       setSelectedProduct(productoExistente)
+    }
+    
+    // Si tiene categoría, marcarla como seleccionada
+    if (producto.categoria && producto.id_categoria) {
+      setSelectedCategoria({
+        id: producto.id_categoria,
+        nombre: producto.categoria
+      })
     }
   }
 
@@ -286,6 +381,9 @@ export const SeccionOrden = ({ onVolver }) => {
       if (productDropdownRef.current && !productDropdownRef.current.contains(event.target)) {
         setShowSuggestions(false)
       }
+      if (categoriaDropdownRef.current && !categoriaDropdownRef.current.contains(event.target)) {
+        setShowCategoriaSuggestions(false)
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
@@ -322,7 +420,7 @@ export const SeccionOrden = ({ onVolver }) => {
             onClick={onVolver}
           >
             <FaArrowLeft className="me-2" />
-            Volver
+            
           </button>
           <h2>Nueva Orden de Compra</h2>
         </div>
@@ -510,8 +608,72 @@ export const SeccionOrden = ({ onVolver }) => {
                     />
                   </div>
 
-                  {/* Precio unitario y cantidad */}
+                  {/* Campo de categoría */}
                   <div className="col-md-6 mb-3">
+                    <label htmlFor="categoria" className="form-label">Categoría</label>
+                    <div className="position-relative" ref={categoriaDropdownRef}>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="categoria"
+                        name="categoria"
+                        value={categoriaSearchTerm}
+                        onChange={handleCategoriaSearch}
+                        placeholder="Buscar categoría o escribir nueva..."
+                        autoComplete="off"
+                      />
+                      
+                      {/* Dropdown de sugerencias de categorías */}
+                      {showCategoriaSuggestions && filteredCategorias.length > 0 && (
+                        <div 
+                          className="position-absolute w-100 bg-white border border-top-0 shadow-sm" 
+                          style={{ zIndex: 1000, maxHeight: '150px', overflowY: 'auto' }}
+                        >
+                          {filteredCategorias.map((categoria) => (
+                            <div
+                              key={categoria.id}
+                              className="p-2 border-bottom cursor-pointer hover-bg-light"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => handleCategoriaSelect(categoria)}
+                              onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                              onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                            >
+                              <div className="fw-semibold">{categoria.nombre}</div>
+                              <small className="text-muted">Categoría existente</small>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Mensaje cuando no hay categorías coincidentes */}
+                      {showCategoriaSuggestions && filteredCategorias.length === 0 && categoriaSearchTerm.length > 0 && (
+                        <div 
+                          className="position-absolute w-100 bg-white border border-top-0 shadow-sm p-3 text-center text-muted" 
+                          style={{ zIndex: 1000 }}
+                        >
+                          <div className="fw-semibold text-success">Nueva categoría: "{categoriaSearchTerm}"</div>
+                          <small>Se creará como categoría nueva</small>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Indicador de categoría seleccionada */}
+                    {selectedCategoria && (
+                      <small className="text-success">
+                        ✓ Categoría existente seleccionada: {selectedCategoria.nombre}
+                      </small>
+                    )}
+                    
+                    {/* Indicador de nueva categoría */}
+                    {!selectedCategoria && categoriaSearchTerm.trim() && (
+                      <small className="text-warning">
+                        ⚠ Se creará nueva categoría: "{categoriaSearchTerm.trim()}"
+                      </small>
+                    )}
+                  </div>
+
+                  {/* Precio unitario y cantidad */}
+                  <div className="col-md-3 mb-3">
                     <label htmlFor="precio_unitario" className="form-label">Precio Unitario *</label>
                     <input
                       type="number"
@@ -528,7 +690,7 @@ export const SeccionOrden = ({ onVolver }) => {
                     />
                   </div>
 
-                  <div className="col-md-6 mb-3">
+                  <div className="col-md-3 mb-3">
                     <label htmlFor="cantidad" className="form-label">Cantidad *</label>
                     <input
                       type="number"
@@ -554,15 +716,17 @@ export const SeccionOrden = ({ onVolver }) => {
                       <div className="col-md-3">
                         <strong>Nombre:</strong> {selectedProduct.nombre_producto}
                       </div>
-                      <div className="col-md-3">
+                      <div className="col-md-2">
                         <strong>Modelo:</strong> {selectedProduct.modelo || 'N/A'}
                       </div>
-                      <div className="col-md-3">
+                      <div className="col-md-2">
                         <strong>Stock:</strong> {selectedProduct.stock || 0}
                       </div>
                       <div className="col-md-3">
                         <strong>Precio de Compra Anterior:</strong> S/{selectedProduct.precio_compra || 'N/A'}
-                        
+                      </div>
+                      <div className="col-md-2">
+                        <strong>Categoría:</strong> {selectedProduct.nombre_categoria || 'Sin categoría'}
                       </div>
                     </div>
                   </div>
@@ -575,7 +739,7 @@ export const SeccionOrden = ({ onVolver }) => {
                       Cancelar
                     </button>
                   )}
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn " style={{ backgroundColor: '#8B45FF', color: '#fff' }}>
                     <FaPlus className="me-2" />
                     {editingIndex >= 0 ? 'Guardar Cambios' : 'Agregar Producto'}
                   </button>
@@ -597,6 +761,7 @@ export const SeccionOrden = ({ onVolver }) => {
                       <tr>
                         <th>Producto</th>
                         <th>Modelo</th>
+                        
                         <th>Cantidad</th>
                         <th>Precio Unit.</th>
                         <th>Subtotal</th>

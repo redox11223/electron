@@ -32,5 +32,27 @@ export class ProductController {
         return { success: false, error: error.message }
       }
     })
+
+    // Handler específico para GestionProducto
+    ipcMain.handle('get-products-management', async () => {
+      try {
+        const result = this.productModel.getProductsForManagement()
+        return { success: true, data: result }
+      } catch (error) {
+        console.error('Error al obtener productos para gestión:', error)
+        return { success: false, error: error.message }
+      }
+    })
+
+    // Handler para actualizar productos
+    ipcMain.handle('update-product', async (event, productData) => {
+      try {
+        const result = this.productModel.updateProduct(productData)
+        return { success: true, data: result }
+      } catch (error) {
+        console.error('Error al actualizar producto:', error)
+        return { success: false, error: error.message }
+      }
+    })
   }
 }
