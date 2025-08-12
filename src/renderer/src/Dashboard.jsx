@@ -15,6 +15,7 @@ export default Dashboard;
 
 import { useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
+import { AuthProvider } from './context/AuthContext'
 
 const Dashboard = () => {
   const location = useLocation()
@@ -27,9 +28,9 @@ const Dashboard = () => {
   console.log('Información del usuario:', userInfo)
   
   return (
-    <>
-      <Layout userInfo={userInfo} /> {/* Pasamos toda la información del usuario a Layout */}
-    </>
+    <AuthProvider>
+      <Layout userInfo={userInfo} />
+    </AuthProvider>
   )
 }
 

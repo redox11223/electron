@@ -9,5 +9,11 @@ export const userApi = {
   },
   validateUser: (userLogin) => {
     return ipcRenderer.invoke('validate-user', userLogin)
+  },
+  getUserProfile: (userId) => {
+    return ipcRenderer.invoke('get-user-profile', userId)
+  },
+  updateUserProfile: (userId, personData) => {
+    return ipcRenderer.invoke('update-user-profile', userId, personData)
   }
 }

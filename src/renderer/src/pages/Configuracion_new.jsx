@@ -150,68 +150,6 @@ export const Configuracion = () => {
     resetUpdateUsuarioMutation()
   }
 
-  // Función para abrir modal de crear usuario con campos limpios
-  const handleOpenCreateModal = () => {
-    setFormData({
-      nombre: '',
-      apellido: '',
-      dni: '',
-      direccion: '',
-      email: '',
-      celular: '',
-      nombre_usuario: '',
-      password: '',
-      id_rol: ''
-    })
-    setShowCreateModal(true)
-  }
-
-  // Función para manejar edición de usuario
-  const handleEditUsuario = async (e) => {
-    if (e && e.preventDefault) {
-      e.preventDefault()
-    }
-    
-    if (!selectedUsuario) {
-      console.error('No hay usuario seleccionado')
-      return
-    }
-
-    // Validar campos requeridos
-    if (!formData.nombre || !formData.apellido || !formData.dni || !formData.celular || !formData.nombre_usuario || !formData.id_rol) {
-      alert('Por favor, complete todos los campos requeridos')
-      return
-    }
-
-    try {
-      console.log('Datos a actualizar:', formData)
-      console.log('Usuario seleccionado:', selectedUsuario)
-      
-      const dataToUpdate = {
-        nombre: formData.nombre,
-        apellido: formData.apellido,
-        dni: formData.dni,
-        direccion: formData.direccion || '',
-        email: formData.email || '',
-        celular: formData.celular,
-        nombre_usuario: formData.nombre_usuario,
-        id_rol: formData.id_rol
-      }
-      
-      // Solo incluir password si se proporciona
-      if (formData.password && formData.password.trim() !== '') {
-        dataToUpdate.password = formData.password
-      }
-      
-      await updateUsuarioFn({ 
-        id: selectedUsuario.id_usuario, 
-        userData: dataToUpdate 
-      })
-    } catch (error) {
-      console.error('Error al actualizar usuario:', error)
-    }
-  }
-
   // Efecto para mostrar mensajes de éxito
   useEffect(() => {
     if (isUpdateSuccess) {
@@ -490,7 +428,7 @@ export const Configuracion = () => {
                       </div>
                       <button 
                         className="btn btn-primary"
-                        onClick={handleOpenCreateModal}
+                        onClick={() => setShowCreateModal(true)}
                       >
                         <i className="bi bi-plus me-2"></i>
                         Crear Usuario
@@ -543,15 +481,11 @@ export const Configuracion = () => {
                           </thead>
                           <tbody>
                             {usuarios.filter(usuario => 
-                              // Filtrar el usuario actual del sistema
-                              usuario.id_usuario !== user?.id_usuario &&
-                              (
-                                !searchTerm || 
-                                usuario.nombre_usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                usuario.nombre_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                usuario.nombre_rol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                usuario.dni.includes(searchTerm.toLowerCase())
-                              )
+                              !searchTerm || 
+                              usuario.nombre_usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                              usuario.nombre_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                              usuario.nombre_rol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                              usuario.dni.toLowerCase().includes(searchTerm.toLowerCase())
                             ).map((usuario) => (
                               <tr key={usuario.id_usuario}>
                                 <td className="fw-medium">{usuario.nombre_usuario}</td>
@@ -586,15 +520,15 @@ export const Configuracion = () => {
                                       onClick={() => {
                                         setSelectedUsuario(usuario)
                                         setFormData({
-                                          nombre: usuario.nombre || '',
-                                          apellido: usuario.apellido || '',
-                                          dni: usuario.dni || '',
+                                          nombre: usuario.nombre,
+                                          apellido: usuario.apellido,
+                                          dni: usuario.dni,
                                           direccion: usuario.direccion || '',
                                           email: usuario.email || '',
-                                          celular: usuario.celular || '',
-                                          nombre_usuario: usuario.nombre_usuario || '',
+                                          celular: usuario.celular,
+                                          nombre_usuario: usuario.nombre_usuario,
                                           password: '',
-                                          id_rol: usuario.id_rol || ''
+                                          id_rol: usuario.id_rol
                                         })
                                         setShowEditModal(true)
                                       }}
@@ -826,156 +760,11 @@ export const Configuracion = () => {
         </div>
       )}
 
-      {/* Modal para editar usuario */}
-      {showEditModal && selectedUsuario && (
-        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Editar Usuario</h5>
-                <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
-              </div>
-              <div className="modal-body">
-                <form onSubmit={handleEditUsuario}>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">Nombre *</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={formData.nombre}
-                          onChange={(e) => handleFormChange('nombre', e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">Apellido *</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={formData.apellido}
-                          onChange={(e) => handleFormChange('apellido', e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">DNI *</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={formData.dni}
-                          onChange={(e) => handleFormChange('dni', e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">Celular *</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={formData.celular}
-                          onChange={(e) => handleFormChange('celular', e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">Email</label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          value={formData.email}
-                          onChange={(e) => handleFormChange('email', e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">Dirección</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={formData.direccion}
-                          onChange={(e) => handleFormChange('direccion', e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">Usuario *</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={formData.nombre_usuario}
-                          onChange={(e) => handleFormChange('nombre_usuario', e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">Nueva Contraseña</label>
-                        <input
-                          type="password"
-                          className="form-control"
-                          value={formData.password}
-                          onChange={(e) => handleFormChange('password', e.target.value)}
-                          placeholder="Dejar vacío para mantener la actual"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Rol *</label>
-                    <select
-                      className="form-select"
-                      value={formData.id_rol}
-                      onChange={(e) => handleFormChange('id_rol', e.target.value)}
-                      required
-                    >
-                      <option value="">Seleccionar rol...</option>
-                      {roles.map(rol => (
-                        <option key={rol.id_rol} value={rol.id_rol}>
-                          {rol.nombre_rol}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  {updateUsuarioError && (
-                    <div className="alert alert-danger">
-                      <i className="bi bi-exclamation-triangle me-2"></i>
-                      {updateUsuarioError.message}
-                    </div>
-                  )}
-                </form>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>
-                  Cancelar
-                </button>
-                <button type="button" className="btn btn-primary" onClick={handleEditUsuario} disabled={isUpdatingUsuario}>
-                  {isUpdatingUsuario ? 'Actualizando...' : 'Actualizar Usuario'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Bootstrap Icons CDN */}
+      <link 
+        rel="stylesheet" 
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      />
     </div>
   )
 }

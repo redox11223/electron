@@ -5,6 +5,7 @@ import { UserPersonaController } from '../controllers/userPersonaController'
 import { VentaController } from '../controllers/ventaController'
 import { ProveedorController } from '../controllers/proveedorController'
 import { CompraController } from '../controllers/compraController'
+import { UsuarioController } from '../controllers/usuarioController'
 import { dbConfig } from '../config/db'
 
 export const RegisterIpcs = (ipcMain, db) => {
@@ -23,6 +24,31 @@ export const RegisterIpcs = (ipcMain, db) => {
   ventaController.register(ipcMain)
   proveedorController.register(ipcMain)
   compraController.register(ipcMain)
+
+  // Handlers para gestión de usuarios
+  ipcMain.handle('get-all-usuarios', async () => {
+    return await UsuarioController.getAllUsuarios()
+  })
+
+  ipcMain.handle('get-all-roles', async () => {
+    return await UsuarioController.getAllRoles()
+  })
+
+  ipcMain.handle('create-usuario', async (event, userData) => {
+    return await UsuarioController.createUsuario(userData)
+  })
+
+  ipcMain.handle('update-usuario', async (event, id, userData) => {
+    return await UsuarioController.updateUsuario(id, userData)
+  })
+
+  ipcMain.handle('delete-usuario', async (event, id) => {
+    return await UsuarioController.deleteUsuario(id)
+  })
+
+  ipcMain.handle('search-usuarios', async (event, searchTerm) => {
+    return await UsuarioController.searchUsuarios(searchTerm)
+  })
 }
 
 export const RegisterAuthIpcs = (ipcMain) => {

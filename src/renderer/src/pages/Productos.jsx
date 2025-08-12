@@ -42,7 +42,7 @@ export const Productos = () => {
 
   // Opciones para el tipo de filtro
   const filterOptions = [
-    { value: 'nombre_producto', label: 'Nombre del producto' },
+    { value: 'nombre_producto', label: 'Nombre' },
     { value: 'modelo', label: 'Modelo' }
   ]
 

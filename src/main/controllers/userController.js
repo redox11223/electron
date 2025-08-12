@@ -36,5 +36,25 @@ export class UserController {
         return { success: false, error: error.message }
       }
     })
+
+    ipcMain.handle('get-user-profile', async (event, userId) => {
+      try {
+        const userProfile = this.userModel.getUserWithPersonData(userId)
+        return { success: true, data: userProfile }
+      } catch (error) {
+        console.error('Error al cargar perfil del usuario', error)
+        return { success: false, error: error.message }
+      }
+    })
+
+    ipcMain.handle('update-user-profile', async (event, userId, personData) => {
+      try {
+        const result = this.userModel.updateUserPersonData(userId, personData)
+        return { success: true, data: result }
+      } catch (error) {
+        console.error('Error al actualizar perfil del usuario', error)
+        return { success: false, error: error.message }
+      }
+    })
   }
 }

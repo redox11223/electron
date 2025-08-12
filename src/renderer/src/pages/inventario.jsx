@@ -232,7 +232,7 @@ export const Inventario = () => {
                           <FaInfoCircle />
                         </button>
                         <button
-                          className="btn btn-warning btn-sm"
+                          className="btn btn-sm" style={{ backgroundColor: '#FF8B45', color: '#fff' }}
                           onClick={() => handleShowEstado(compra)}
                           disabled={isUpdatingEstado}
                         >
